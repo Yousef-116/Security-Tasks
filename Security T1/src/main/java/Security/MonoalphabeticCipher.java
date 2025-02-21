@@ -104,9 +104,9 @@ public class MonoalphabeticCipher {
                 alphabetIndex++;
             }
         }
-        System.out.print("key : ");
-        for(char c : keyMap)
-            System.out.print(c+" ");
+//        System.out.print("key : ");
+//        for(char c : keyMap)
+//            System.out.print(c+" ");
 
         return new String(keyMap);
     }
