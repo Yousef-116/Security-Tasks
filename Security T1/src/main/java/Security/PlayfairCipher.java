@@ -56,6 +56,17 @@ public class PlayfairCipher {
     // TODO: Implement this method to find the position of a character in the key matrix
     private int[] findPosition(char c) {
         // Students should complete this part
+
+        if(c=='J')
+            c='I';
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if(keyMatrix[i][j] == c)
+                    return  new int[]{i, j};
+            }
+        }
+
+
         return null;
     }
 
@@ -87,6 +98,42 @@ public class PlayfairCipher {
     // TODO: Implement this method to decrypt the ciphertext back to plaintext
     public String decrypt(String text) {
         // Students should complete this part
-        return null;
+        text = text.toUpperCase().replaceAll("[^A-Z]", "").replace("J", "I");
+
+        if(text.length()%2==1) {
+            text = text.substring(0, text.length() - 1);
+            //System.out.println(text); // Output: Hello
+        }
+
+        StringBuilder decryptText = new StringBuilder();
+        StringBuilder decryptText_temp = new StringBuilder();
+
+        for (int i = 0; i < text.length(); i += 2) {
+            int[] pos1 = findPosition(text.charAt(i));
+            int[] pos2 = findPosition(text.charAt(i + 1));
+
+            if (pos1 == null || pos2 == null) continue; // Safety check
+
+            if (pos1[0] == pos2[0]) {  // Same row
+                decryptText_temp.append(keyMatrix[pos1[0]][( pos1[1] - 1 >= 0 ? pos1[1] - 1 : 4 )]);
+                decryptText_temp.append(keyMatrix[pos2[0]][ pos2[1] - 1 >= 0 ? pos2[1] - 1 : 4 ]);
+            } else if (pos1[1] == pos2[1]) {  // Same column
+                decryptText_temp.append(keyMatrix[ pos1[0] - 1 >= 0 ? pos1[0] - 1 : 4 ][pos1[1]]);
+                decryptText_temp.append(keyMatrix[ pos2[0] - 1 >= 0 ? pos2[0] - 1 : 4 ][pos2[1]]);
+            } else {  // Rectangle swap
+                decryptText_temp.append(keyMatrix[pos1[0]][pos2[1]]);
+                decryptText_temp.append(keyMatrix[pos2[0]][pos1[1]]);
+            }
+        }
+
+        //System.out.println(decryptText_temp);
+        for (int i = 0; i < decryptText_temp.length() ; i++) {
+            if(decryptText_temp.charAt(i) == 'X' && i%2==1)
+                continue;
+            decryptText.append(decryptText_temp.charAt(i));
+            //System.out.println(decryptText);
+        }
+
+        return decryptText.toString();
     }
 }
