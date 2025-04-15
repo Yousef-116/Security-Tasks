@@ -6,7 +6,69 @@ public class ColumnarCipher {
     public List<Integer> analyse(String plainText, String cipherText) {
         // TODO: Analyze the plainText and cipherText to determine the key(s)
 
-        return new ArrayList<>(); // Placeholder return
+        String plain = plainText;
+        String cipher = cipherText;
+
+        int keylen = 0;
+        ArrayList<Integer> key = new ArrayList<>();
+
+        for (int i = 2; i < plain.length(); i++) {
+            StringBuilder searchCol = new StringBuilder();
+
+            for (int j = 0; j < plain.length(); j += i) {
+                searchCol.append(plain.charAt(j));
+            }
+
+            int index = cipher.indexOf(searchCol.toString());
+
+            if (index != -1) {
+                keylen = i;
+                boolean flag = true;
+                ArrayList<String> cols = new ArrayList<>();
+
+                // Initialize with empty strings
+                for (int k = 0; k < keylen; k++) {
+                    cols.add("");
+                }
+
+                for (int col = 0; col < keylen; col++) {
+                    StringBuilder temp = new StringBuilder();
+                    for (int row = col; row < plain.length(); row += keylen) {
+                        temp.append(plain.charAt(row));
+                    }
+                    cols.set(col, temp.toString());
+                }
+
+                for (int k = 0; k < keylen; k++) {
+                    index = cipher.indexOf(cols.get(k));
+                    if (index != -1) {
+                        key.add(index);
+                    } else {
+                        flag = false;
+                        break;
+                    }
+                }
+
+                if (flag) {
+                    for (int k = 0; k < keylen; k++) {
+                        if (key.get(k) == 0)
+                            key.set(k, 1);
+                        else
+                            key.set(k, (key.get(k) / cols.get(0).length()) + 1);
+                    }
+                    break;
+                }
+
+            } else {
+                System.out.println("No match found.");
+            }
+        }
+
+        for (int i = 0; i < keylen; i++) {
+            System.out.println("key  : " + key.get(i));
+        }
+
+        return key; // Placeholder return
     }
 
     public String decrypt(String cipherText, List<Integer> key) {
