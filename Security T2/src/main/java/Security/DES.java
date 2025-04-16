@@ -126,26 +126,38 @@ public class DES {
 
     // Performs bitwise XOR on two binary strings of equal length
     private String xor(String a, String b) {
-        // TODO: Implement bitwise XOR between strings 'a' and 'b'.
-
         if (a.length() != b.length()) {
             throw new IllegalArgumentException("Strings must be of equal length for XOR operation.");
         }
 
-        return null; // Placeholder return
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < a.length(); i++) {
+            result.append(a.charAt(i) == b.charAt(i) ? '0' : '1');
+        }
+        return result.toString();
     }
+
 
     // Generate the subkeys (PC-1, shifts, PC-2)
     private static String[] generateSubKeys(String keyBin) {
         String[] subkeys = new String[16];
 
-        // TODO: Apply PC-1 to the 64-bit key to get a 56-bit key
+        // Apply PC-1 to the 64-bit key to get a 56-bit key
+        String permutedKey = permute(keyBin, PC1);
 
-        // TODO: Split the 56-bit key into two halves
+        // Split the 56-bit key into two halves
+        String C = permutedKey.substring(0, 28);
+        String D = permutedKey.substring(28);
 
-        // TODO: Generate 16 subkeys by shifting and applying PC-2
+        // Generate 16 subkeys by shifting and applying PC-2
         for (int i = 0; i < 16; i++) {
-
+            // Apply the appropriate shift for this round
+            C = leftShift(C, SHIFTS[i]);
+            D = leftShift(D, SHIFTS[i]);
+            
+            // Combine and apply PC-2 to get 48-bit subkey
+            String combined = C + D;
+            subkeys[i] = permute(combined, PC2);
         }
 
         return subkeys;
@@ -154,18 +166,34 @@ public class DES {
 
     // Feistel function
     private String feistel(String R, String subKey) {
-        // TODO: Expand R to 48 bits using E-table
+        // Expand R to 48 bits using E-table
+        String expanded = permute(R, E);
 
-        // TODO: XOR the expanded R with the subkey
+        // XOR the expanded R with the subkey
+        String xored = xor(expanded, subKey);
 
-        // TODO: Divide the xored result into 8 blocks and apply S-box substitution
+        // Divide the xored result into 8 blocks and apply S-box substitution
         StringBuilder substituted = new StringBuilder();
         for (int i = 0; i < 8; i++) {
+            // Extract 6-bit block
+            String block = xored.substring(i * 6, (i + 1) * 6);
+            
+            // Get row and column for S-box
+            int row = Integer.parseInt("" + block.charAt(0) + block.charAt(5), 2);
+            int col = Integer.parseInt(block.substring(1, 5), 2);
+            
+            // Get S-box value (4 bits)
+            int val = SBOXES[i][row][col];
+            
+            // Convert to 4-bit binary string
+            String binVal = String.format("%4s", Integer.toBinaryString(val)).replace(' ', '0');
+            substituted.append(binVal);
         }
 
-        // TODO: Apply permutation P to the substituted output
-
-        return null;
+        // Apply permutation P to the substituted output
+        return permute(substituted.toString(), P);
     }
 
 }
+
+
