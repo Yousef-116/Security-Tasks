@@ -12,13 +12,16 @@ public class ColumnarCipher {
         int keylen = 0;
         ArrayList<Integer> key = new ArrayList<>();
 
+
         for (int i = 2; i < plain.length(); i++) {
+            // 1- loop to get the length of the key
             StringBuilder searchCol = new StringBuilder();
 
             for (int j = 0; j < plain.length(); j += i) {
                 searchCol.append(plain.charAt(j));
             }
 
+            // ckeck if the coll is in the cipher text
             int index = cipher.indexOf(searchCol.toString());
 
             if (index != -1) {
@@ -54,19 +57,27 @@ public class ColumnarCipher {
                         if (key.get(k) == 0)
                             key.set(k, 1);
                         else
-                            key.set(k, (key.get(k) / cols.get(0).length()) + 1);
+                            key.set(k, (key.get(k) / cols.get(0).length()) + 1);    // 0 , 3 , 9 , 6 ->  1 ,2 , 4 , 3
                     }
-                    break;
+                    if(encrypt(plainText,key).equals(cipherText)) {
+                        System.out.println("match found. when i = " + i);
+                        for (int n = 0; n < keylen; n++) {
+                            System.out.println("key  : " + key.get(n));
+                        }
+                        break;
+                    }
                 }
 
+
+
             } else {
-                System.out.println("No match found.");
+                System.out.println("No match found. when i = " + i);
             }
         }
 
-        for (int i = 0; i < keylen; i++) {
-            System.out.println("key  : " + key.get(i));
-        }
+//        for (int i = 0; i < keylen; i++) {
+//            System.out.println("key  : " + key.get(i));
+//        }
 
         return key; // Placeholder return
     }

@@ -126,6 +126,8 @@ public class DES {
 
     // Performs bitwise XOR on two binary strings of equal length
     private String xor(String a, String b) {
+        // TODO: Implement bitwise XOR between strings 'a' and 'b'.
+
         if (a.length() != b.length()) {
             throw new IllegalArgumentException("Strings must be of equal length for XOR operation.");
         }
@@ -142,14 +144,14 @@ public class DES {
     private static String[] generateSubKeys(String keyBin) {
         String[] subkeys = new String[16];
 
-        // Apply PC-1 to the 64-bit key to get a 56-bit key
+        // TODO: Apply PC-1 to the 64-bit key to get a 56-bit key
         String permutedKey = permute(keyBin, PC1);
 
-        // Split the 56-bit key into two halves
+        // TODO: Split the 56-bit key into two halves
         String C = permutedKey.substring(0, 28);
         String D = permutedKey.substring(28);
 
-        // Generate 16 subkeys by shifting and applying PC-2
+        // TODO: Generate 16 subkeys by shifting and applying PC-2
         for (int i = 0; i < 16; i++) {
             // Apply the appropriate shift for this round
             C = leftShift(C, SHIFTS[i]);
@@ -166,13 +168,14 @@ public class DES {
 
     // Feistel function
     private String feistel(String R, String subKey) {
-        // Expand R to 48 bits using E-table
+
+        // TODO: Expand R to 48 bits using E-table to the key 56
         String expanded = permute(R, E);
 
-        // XOR the expanded R with the subkey
+        // TODO: XOR the expanded R with the subkey
         String xored = xor(expanded, subKey);
 
-        // Divide the xored result into 8 blocks and apply S-box substitution
+        // TODO: Divide the xored result into 8 blocks and apply S-box substitution to get 32 bits
         StringBuilder substituted = new StringBuilder();
         for (int i = 0; i < 8; i++) {
             // Extract 6-bit block
@@ -190,7 +193,7 @@ public class DES {
             substituted.append(binVal);
         }
 
-        // Apply permutation P to the substituted output
+        // TODO: Apply permutation P to the substituted output
         return permute(substituted.toString(), P);
     }
 
