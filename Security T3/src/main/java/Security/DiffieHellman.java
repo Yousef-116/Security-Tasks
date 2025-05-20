@@ -17,8 +17,29 @@ public class DiffieHellman {
         return Arrays.asList(ka, kb);
     }
 
-    private int modExp(int base, int exp, int mod) {
+    private int modPow(int base, int exp, int mod) {
         return BigInteger.valueOf(base).modPow(BigInteger.valueOf(exp), BigInteger.valueOf(mod)).intValue();
     }
+
+
+
+    // Fast modular exponentiation: (base^exp) % mod
+    private int modExp(int base, int exp, int mod) {
+        int result = 1;
+        base = base % mod;
+
+        while (exp > 0) {
+            if (exp % 2 == 1) { // If exponent is odd
+                result = (int)(((long)result * base) % mod);
+            }
+            base = (int)(((long)base * base) % mod);
+            exp = exp / 2;
+        }
+
+        return result;
+    }
+
+
+
 
 }

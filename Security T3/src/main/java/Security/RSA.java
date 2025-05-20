@@ -17,9 +17,26 @@ public class RSA {
     }
 
     // Fast modular exponentiation: (base^exp) % mod
-    private int modExp(long base, long exp, long mod) {
+    private int modPow(long base, long exp, long mod) {
         return BigInteger.valueOf(base).modPow(BigInteger.valueOf(exp), BigInteger.valueOf(mod)).intValue();
     }
+
+    // Fast modular exponentiation: (base^exp) % mod
+    private int modExp(int base, int exp, int mod) {
+        int result = 1;
+        base = base % mod;
+
+        while (exp > 0) {
+            if (exp % 2 == 1) { // If exponent is odd
+                result = (int)(((long)result * base) % mod);
+            }
+            base = (int)(((long)base * base) % mod);
+            exp = exp / 2;
+        }
+
+        return result;
+    }
+
 
     // Returns modular inverse of a mod m using Extended Euclidean Algorithm
     private int modInverse(int a, int m) {
